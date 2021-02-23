@@ -36,8 +36,18 @@ jobs:
     steps:
      - name: Step one
        run: |
-         echo ${{ github.ref }}
-         exit 1
+          export OHIO_SITE_TAG=$(bash -c '
+          if [[ $SOURCE_BRANCH == *"refs/tags"* ]]; then
+            echo v4;
+          elif [[ $SOURCE_BRANCH == "refs/heads/master" ]]; then
+            echo master2;
+          else
+            echo $SOURCE_BRANCH | cut -d "/" -f 3;
+          fi
+          ')
+          echo $SOURCE_BRANCH
+          echo ${{ github.ref }}
+          exit 1
 
   build:
     name: Build site image
