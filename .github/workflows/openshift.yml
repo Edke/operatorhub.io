@@ -45,7 +45,7 @@ jobs:
             echo $SOURCE_BRANCH | cut -d "/" -f 3;
           fi
           ')
-          echo $SOURCE_BRANCH
+          echo $OHIO_SITE_TAG
           echo ${{ github.ref }}
           exit 1
 
