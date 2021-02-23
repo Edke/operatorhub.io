@@ -2,6 +2,8 @@ name: Build, push and deploy site
 
 on:
   push:
+    tags:
+      - '*'
     branches:
       - master
       - dev
@@ -13,7 +15,29 @@ env:
   OHIO_REGISTRY_IMAGE: quay.io/operator-framework/upstream-community-operators:latest
   SOURCE_BRANCH: ${{ github.ref }}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 jobs:
+  debug:
+    name: Debug me man
+    runs-on: ubuntu-latest
+    steps:
+     - name: Step one
+       run: |
+         echo ${{ github.ref }}
+         exit 1
+
   build:
     name: Build site image
     runs-on: ubuntu-latest
