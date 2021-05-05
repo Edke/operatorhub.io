@@ -2,11 +2,10 @@ name: Manually invalidate Akamai cache
 
 on:
   workflow_dispatch:
-
-env:
-  # OHIO_SITE_IMAGE: quay.io/operator-framework/operatorhubio
-  # OHIO_REGISTRY_IMAGE: quay.io/operator-framework/upstream-community-operators
-  SOURCE_BRANCH: ${{ github.ref }}
+    inputs:
+      tag:
+        description: Tag used for rebuild
+        required: true
 
 jobs:
   invalidate-cache:
@@ -14,9 +13,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.tag }}
 
       - name: Invalidate Akamai cache
         run: |
-          echo ${SOURCE_BRANCH}
-          echo ${{ github.ref }}
           ./invalidate.sh
