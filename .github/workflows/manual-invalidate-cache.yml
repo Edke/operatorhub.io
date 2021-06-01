@@ -2,10 +2,6 @@ name: Manually invalidate Akamai cache
 
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: Ref (hash or tag)
-        required: true
 
 jobs:
   invalidate-cache:
@@ -13,8 +9,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.tag }}
 
       - name: Invalidate Akamai cache
         run: |
