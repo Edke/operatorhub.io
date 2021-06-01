@@ -2,6 +2,10 @@ name: Manually rebuild DEV environment
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Ref (hash or tag)
+        required: true
 
 env:
   OHIO_SITE_IMAGE: quay.io/operator-framework/operatorhubio
@@ -24,6 +28,8 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.tag }}
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
@@ -74,9 +80,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.tag }}
 
       - name: Deploy to DEV
-        if: ${{ github.ref == 'refs/heads/master' }}
         run: |
           ./deploy.sh dev
-

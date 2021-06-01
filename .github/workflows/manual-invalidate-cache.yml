@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Tag used for rebuild
+        description: Ref (hash or tag)
         required: true
 
 jobs:

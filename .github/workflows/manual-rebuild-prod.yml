@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Tag used for rebuild
+        description: Ref (hash or tag)
         required: true
 
 env:
@@ -23,11 +23,13 @@ jobs:
     steps:
       - name: Setup environment using Docker
         run: |
-          docker run -d -p 50051:50051 --name registry $OHIO_REGISTRY_IMAGE:dev
+          docker run -d -p 50051:50051 --name registry $OHIO_REGISTRY_IMAGE:latest
           docker ps
 
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.tag }}
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
@@ -45,7 +47,7 @@ jobs:
       - name: Build site image
         run: |
           export OHIO_SITE_TAG=$(bash -c '
-            echo $SOURCE_BRANCH | cut -d "/" -f 3;
+            echo v4;
           fi
           ')
           docker build -t "$OHIO_SITE_IMAGE:$OHIO_SITE_TAG" -f travis.Dockerfile .
@@ -54,7 +56,7 @@ jobs:
         if: ${{ contains(github.ref, 'refs/tags') || github.ref == 'refs/heads/master' }}
         run: |
           export OHIO_SITE_TAG=$(bash -c '
-            echo $SOURCE_BRANCH | cut -d "/" -f 3;
+            echo v4;
           ')
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin $DOCKER_REGISTRY
           docker push "$OHIO_SITE_IMAGE:$OHIO_SITE_TAG"
@@ -78,9 +80,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.tag }}
 
-      - name: Deploy to DEV
-        if: ${{ github.ref == 'refs/heads/master' }}
+      - name: Deploy to PREPROD
         run: |
-          ./deploy.sh dev
+          ./deploy.sh preprod
 
+      - name: Deploy to PROD
+        run: |
+          ./deploy.sh prod
+
+      - name: Invalidate Akamai cache
+        run: |
+          ./invalidate.sh
